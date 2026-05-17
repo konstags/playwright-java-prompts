@@ -1,0 +1,45 @@
+Apply templates from this repository into the generated project as a dedicated, one-time step.
+
+Context:
+- You are running this prompt from inside the generated project folder: playwright-java-automation.
+- Prompt 02 created the project scaffold only.
+- This prompt is the only place where generated-project templates should be copied.
+
+Important:
+- Do NOT use hardcoded absolute paths.
+- Use sibling-relative paths.
+
+1. Resolve paths relative to current project root:
+   - Source template folder: ../playwright-java-prompts/templates/generated-project/
+   - Target project folder: .
+
+2. Validate both locations:
+   - Confirm ../playwright-java-prompts/templates/generated-project/ exists.
+   - Confirm current folder is playwright-java-automation (for example, pom.xml exists).
+   - If source is missing, stop and report a clear error.
+
+3. Copy template artifacts into the current project:
+   - ../playwright-java-prompts/templates/generated-project/.github/copilot-instructions.md -> ./.github/copilot-instructions.md
+   - ../playwright-java-prompts/templates/generated-project/.github/prompts/ -> ./.github/prompts/
+   - ../playwright-java-prompts/templates/generated-project/skills/ -> ./skills/
+   - ../playwright-java-prompts/templates/generated-project/README.md -> ./README.md only if README.md does not already exist
+
+4. Merge behavior rules:
+   - Never delete existing files.
+   - For files that already exist, update only when template content is missing or outdated.
+   - Preserve project-specific README content when merging.
+
+5. Verify final state by listing these files:
+   - .github/copilot-instructions.md
+   - .github/prompts/prompts.md
+   - .github/prompts/test-generation.md
+   - .github/prompts/page-object-generation.md
+   - .github/prompts/test-utility-generation.md
+   - skills/pw-test-patterns.md
+   - skills/testng-fixtures.md
+   - skills/allure-annotations.md
+
+6. Output a short summary:
+   - Which files were created
+   - Which files were updated
+   - Which files were left unchanged

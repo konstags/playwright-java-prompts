@@ -1,0 +1,81 @@
+Run Jira-derived test scenarios with Playwright CLI first, then optionally generate Java code per approved scenario.
+
+This is Prompt 05a.
+
+Beginner explanation:
+- This prompt is for running and validating behavior interactively with Playwright CLI.
+- You approve each scenario before it runs, so you can see exactly what is happening step-by-step.
+- After a scenario passes, you can choose whether to generate Java test code for that specific scenario.
+
+Goal:
+- Ask the user for a Jira ticket ID.
+- Pull ticket details and extract executable test scenarios from acceptance criteria.
+- Tell the user exactly what scenario will be executed next and ask for confirmation.
+- Run each approved scenario step-by-step with Playwright CLI commands.
+- If a scenario runs successfully, ask whether to generate Java Playwright code for that scenario.
+
+Required first action:
+- Ask: "Please provide the Jira ticket ID (example: QA-123)."
+
+Jira retrieval behavior:
+- After receiving the ticket ID, fetch Jira ticket details (summary, description, acceptance criteria, test notes, attachments/links if available).
+- If Jira cannot be accessed, ask the user to paste the ticket content and continue.
+- Parse acceptance criteria into distinct executable scenarios.
+- Show a summary before execution:
+  - Ticket ID
+  - Summary
+  - Number of scenarios identified
+
+Scenario execution flow:
+1. Present the planned scenario list first, for example:
+   "I identified 3 scenarios: Valid login, Invalid login, Add product to cart."
+
+2. For each scenario, ask before running anything:
+   "Next scenario: [name]\nThis will validate: [brief purpose]\nDo you want to run this now with Playwright CLI? (Yes / No / Modify scenario)"
+
+3. If user says "Yes":
+   - Run the scenario as an interactive Playwright CLI session by executing commands directly in the terminal.
+   - Run ONE command at a time and print what is being executed before running it.
+   - Use headed mode for browser-visible runs where applicable (for example, `playwright-cli open <url> --headed`).
+   - After each executed command, summarize result briefly and ask:
+      "Continue to the next step? (Yes / No / Retry with fallback)"
+   - If user chooses "Retry with fallback", run one fallback command when possible.
+   - If execution fails and no fallback exists, explain the issue in beginner-friendly language and ask whether to skip or stop.
+   - Record successful commands, fallbacks, and observed outcomes.
+   - If the scenario run is successful, ask:
+      "Scenario passed. Do you want me to generate the actual Java test code for this case now? (Yes / No)"
+   - If user says "Yes":
+      - Generate Java Playwright test code for this scenario only (BaseTest/page objects/test class updates as needed).
+      - Explain in one short beginner-friendly note what files were created or updated and why.
+   - If user says "No":
+      - Ask:
+        "Proceed to the next case?\nNext case: [name]\nThis case validates: [brief purpose]\n(Yes / No)"
+      - If user says "No", stop the session.
+
+4. If user says "No":
+   - Skip that scenario and continue to the next one.
+
+5. If user says "Modify scenario":
+   - Ask what to change.
+   - Update the scenario and ask for confirmation again before execution.
+
+6. After all scenarios are processed, ask:
+   "Do you want to run additional coverage scenarios (negative, edge, and error cases)?"
+   - If yes: propose concise options and run only approved ones.
+   - If no: end session.
+
+Execution rules:
+- Do not ask the user to paste CLI logs for code generation in this prompt.
+- Execute Playwright CLI commands directly after user approval for each scenario.
+- Before execution, ensure terminal is at the generated project root (`playwright-java-automation`) so artifacts are created in the expected location.
+- Keep language beginner-friendly and explain each command purpose in one short line.
+- Generate Java code only when the user explicitly approves generation after a successful scenario run.
+
+Completion criteria:
+When execution is complete, provide a summary:
+- Jira ticket ID and summary
+- Scenarios executed, skipped, or modified
+- Command outcomes (worked/fallback/failed)
+- Which scenarios had Java code generated vs skipped
+- Key validations observed
+- Suggested next step: run prompt 06 for debugging/reporting improvements

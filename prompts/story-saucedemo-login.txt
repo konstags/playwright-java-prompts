@@ -1,0 +1,16 @@
+User Story: SauceDemo login flow
+
+As a user, I want to log in to the SauceDemo application so that I can see the products page.
+
+Acceptance Criteria:
+1. Open the SauceDemo login page.
+2. Enter the username standard_user.
+3. Move to the password field.
+4. Enter the password secret_sauce.
+5. Click the login control to submit the form.
+6. Confirm the Products page appears after login.
+
+Notes:
+- This file is meant for Prompt 05b when Jira is not available.
+- Keep using the same story- prefix for future files so Prompt 05b can find them easily.
+- The flow should use Playwright CLI refs where applicable, such as e15 for the login control.

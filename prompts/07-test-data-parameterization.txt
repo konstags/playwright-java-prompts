@@ -1,0 +1,171 @@
+Refactor the test suite to use parameterized tests with external test data, making tests reusable and maintainable.
+
+--- TEST DATA FILE ---
+
+Create src/test/resources/testdata.csv with test user credentials:
+
+```
+username,password,expectedResult
+standard_user,secret_sauce,success
+locked_out_user,secret_sauce,locked
+invalid_user,wrong_password,error
+empty_username,,error
+```
+
+Also create src/test/resources/products.csv for inventory tests:
+
+```
+productName,expectedPrice
+Sauce Labs Backpack,29.99
+Sauce Labs Bolt T-Shirt,15.99
+Sauce Labs Onesie,7.99
+```
+
+Explain in comments why external data is better than hardcoded values:
+- Easy to add new test cases without code changes
+- Non-technical testers can add data
+- Reduces duplication across tests
+- Makes tests more realistic (data varies, assertions stay same)
+
+--- TEST DATA UTILITY CLASS ---
+
+Create src/main/java/com/company/utils/TestDataReader.java:
+- Static method readCSV(String fileName) that returns List<Map<String, String>>
+  - Reads CSV file from src/test/resources/
+  - Each row becomes a Map with column headers as keys
+  - Example: Map with keys "username", "password", "expectedResult"
+- Add error handling and comments explaining each step
+- Example usage in JavaDoc:
+  ```java
+  List<Map<String, String>> testData = TestDataReader.readCSV("testdata.csv");
+  // Returns: [{username=standard_user, password=secret_sauce, expectedResult=success}, ...]
+  ```
+
+--- REFACTOR LoginTests WITH @DataProvider ---
+
+Refactor src/test/java/com/company/tests/LoginTests.java:
+
+1. Add method getLoginData():
+   ```java
+   @DataProvider(name = "loginData")
+   public Iterator<Object[]> getLoginData() {
+       // Load from testdata.csv using TestDataReader
+       // Convert each Map row to Object[] {username, password, expectedResult}
+       // Return as Iterator<Object[]>
+   }
+   ```
+
+2. Refactor existing test methods to use the DataProvider:
+
+   OLD (3 separate @Test methods):
+   ```java
+   @Test
+   public void testValidLogin() { ... }
+   
+   @Test
+   public void testLockedOutLogin() { ... }
+   
+   @Test
+   public void testInvalidLogin() { ... }
+   ```
+
+   NEW (1 parameterized @Test):
+   ```java
+   @Test(dataProvider = "loginData")
+   @Story("Login with various credential types")
+   public void testLoginWithDifferentCredentials(String username, String password, String expectedResult) {
+       loginPage.navigate();
+       loginPage.enterUsername(username);
+       loginPage.enterPassword(password);
+       loginPage.clickLogin();
+       
+       if (expectedResult.equals("success")) {
+           // Assert on inventory page
+       } else if (expectedResult.equals("locked")) {
+           // Assert on error message "locked out"
+       } else {
+           // Assert on generic error
+       }
+   }
+   ```
+
+3. Add comments explaining:
+   - @DataProvider creates test cases automatically (one run per CSV row)
+   - Parameters come from the CSV columns
+   - Each run shows in Allure as a separate test execution
+   - Makes it easy to add new login scenarios without writing new test code
+
+--- REFACTOR InventoryTests WITH @DataProvider ---
+
+Refactor src/test/java/com/company/tests/InventoryTests.java:
+
+1. Add method getProductData():
+   ```java
+   @DataProvider(name = "productData")
+   public Iterator<Object[]> getProductData() {
+       // Load from products.csv using TestDataReader
+       // Return each product as Object[] {productName, expectedPrice}
+   }
+   ```
+
+2. Add a new parameterized test:
+   ```java
+   @Test(dataProvider = "productData")
+   @Story("Add various products to cart and verify details")
+   public void testAddProductToCart(String productName, String expectedPrice) {
+       // Login once
+       loginPage.navigate();
+       loginPage.enterUsername("standard_user");
+       loginPage.enterPassword("secret_sauce");
+       loginPage.clickLogin();
+       
+       // Find product by name and add to cart
+       inventoryPage.addProductToCart(productName);
+       
+       // Verify it was added (cart count increases)
+       // Optionally verify price in cart
+   }
+   ```
+
+3. Update InventoryPage to add method:
+   ```java
+   public void addProductToCart(String productName) {
+       // Find button for this specific product by name
+       // Click it
+       // Increment cart count
+   }
+   ```
+
+--- ALLURE REPORT BEHAVIOR ---
+
+Explain that with @DataProvider:
+- Running `mvn test` now generates 5 login test runs (1 per CSV row) instead of 3 separate tests
+- Allure shows each run separately with its parameters in the test name
+- Example test names in Allure:
+  - "testLoginWithDifferentCredentials[standard_user, secret_sauce, success]"
+  - "testLoginWithDifferentCredentials[locked_out_user, secret_sauce, locked]"
+  - "testLoginWithDifferentCredentials[invalid_user, wrong_password, error]"
+- If one parameterized run fails, others still execute (important for seeing all data issues)
+
+--- JAVA COMMENTS FOR BEGINNERS ---
+
+Explain these concepts in the code:
+- Iterator<Object[]>: Why we return an Iterator instead of a List
+- Object[]: Why each row is an Object array (flexible data types)
+- @DataProvider(name = "..."): How Copilot knows which data provider to use
+- Parameters in @Test: How parameters are injected in order from Object[]
+- CSV parsing: Why splitting by comma and trimming is important
+
+--- FINAL VERIFICATION ---
+
+Run tests:
+```bash
+mvn test
+```
+
+Confirm:
+- 5 login test cases execute (1 per testdata.csv row)
+- 3 inventory test cases execute (1 per products.csv row)
+- All pass (or selectively fail based on test logic)
+- Allure report shows parameterized test names with [data] in brackets
+- No test code duplication between similar scenarios

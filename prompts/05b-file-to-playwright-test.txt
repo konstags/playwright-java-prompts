@@ -1,0 +1,69 @@
+Run file-driven test scenarios with Playwright CLI first, then optionally generate Java code per approved scenario.
+
+This is Prompt 05b.
+
+Beginner explanation:
+- This prompt is for cases where Jira is not available.
+- The user provides a plain-English text file that contains the user story, acceptance criteria, or scenario notes.
+- You read the file, extract executable scenarios, and run them interactively with Playwright CLI.
+- After a scenario passes, you can choose whether to generate Java test code for that specific scenario.
+
+Goal:
+- Ask the user for a `.txt` file path or pasted file contents.
+- Prefer files that use the shared `story-` prefix (for example: `story-saucedemo-login.txt`).
+- If more than one file matches that prefix, ask the user which one to use before continuing.
+- Read the file and extract executable test scenarios from the plain-English user story or acceptance criteria.
+- Tell the user exactly what scenario will be executed next and ask for confirmation.
+- Run each approved scenario step-by-step with Playwright CLI commands.
+- If a scenario runs successfully, ask whether to generate Java Playwright code for that scenario.
+
+Required first action:
+- Ask: "Please provide the text file path or paste the file contents (prefer a file named with the story- prefix, for example: story-saucedemo-login.txt)."
+
+File retrieval behavior:
+- If the user gives a file path, read the file content and continue.
+- If the user pastes the text, use that content directly.
+- If the user gives a story- prefixed file and there are multiple matching files, ask which story- file to use.
+- If the file cannot be accessed, ask the user to paste the content and continue.
+- Parse the story into one or more executable scenarios.
+- Show a summary before execution:
+  - File name or source
+  - Summary
+  - Number of scenarios identified
+
+Naming convention:
+- Tell the user to keep using the same story- prefix for any future plain-English scenario files.
+- This keeps Prompt 05b able to find related files easily.
+
+Scenario execution flow:
+1. Present the planned scenario list first, for example:
+   "I identified 1 scenario: Successful login."
+
+2. For each scenario, Copilot will automatically run all Playwright CLI commands for you, step by step, without asking you to run them manually or confirm each step.
+   - Each command will be printed before execution, and the result will be summarized after.
+   - If a fallback command is needed, Copilot will run it automatically.
+   - If execution fails and no fallback exists, Copilot will explain the issue and skip or stop as appropriate.
+   - All successful commands, fallbacks, and observed outcomes will be recorded.
+   - After each scenario, Copilot will ask if you want to generate Java Playwright test code for that scenario.
+   - If you say Yes, Copilot will generate Java code for that scenario only (BaseTest/page objects/test class updates as needed) and explain what was created or updated.
+   - If you say No, Copilot will proceed to the next scenario automatically.
+
+3. After all scenarios are processed, Copilot will ask if you want to run additional coverage scenarios (negative, edge, and error cases).
+   - If yes: Copilot will propose concise options and run only approved ones.
+   - If no: the session will end.
+
+Execution rules:
+- Do not ask the user to paste CLI logs for code generation in this prompt.
+- Execute Playwright CLI commands directly after user approval for each scenario.
+- Before execution, ensure terminal is at the generated project root (`playwright-java-automation`) so artifacts are created in the expected location.
+- Keep language beginner-friendly and explain each command purpose in one short line.
+- Generate Java code only when the user explicitly approves generation after a successful scenario run.
+
+Completion criteria:
+When execution is complete, provide a summary:
+- File name or source summary
+- Scenarios executed, skipped, or modified
+- Command outcomes (worked/fallback/failed)
+- Which scenarios had Java code generated vs skipped
+- Key validations observed
+- Suggested next step: run prompt 06 for debugging/reporting improvements

@@ -1,0 +1,90 @@
+Create a new Maven project called "playwright-java-automation" as a sibling folder next to this repository (playwright-java-prompts).
+
+Global guard: Never reinstall, upgrade, or switch versions for dependencies that already satisfy the minimum required version for this project.
+
+1. Create the folder structure:
+   playwright-java-automation/
+   ├── pom.xml
+   ├── README.md
+   ├── src/
+   │   ├── test/
+   │   │   ├── java/
+   │   │   │   └── com/company/tests/
+   │   │   └── resources/
+   │   │       └── testng.xml
+   │   └── main/
+   │       └── java/
+   │           └── com/company/
+   │               ├── pages/
+   │               └── utils/
+   ├── .github/
+   │   ├── copilot-instructions.md
+   │   └── prompts/
+   │       ├── test-generation.md
+   │       ├── page-object-generation.md
+   │       └── test-utility-generation.md
+      ├── prompts/
+         │   ├── 03-apply-generated-project-templates.txt
+         │   ├── 04-playwright-cli-saucedemo.txt
+         │   ├── 05a-jira-to-playwright-test.txt
+         │   ├── 05b-file-to-playwright-test.txt
+         │   ├── 06-debugging-and-reports.txt
+         │   └── 07-test-data-parameterization.txt
+   └── skills/
+         └── (empty for now; templates are applied in Prompt 03b)
+
+2. Java version check and setup:
+    - **First, check if Java is already installed and is version 17 or higher.**
+       - Run: `java -version`
+       - Parse the major version from output.
+    - Decision policy (strict):
+       - If Java major version is 17 or higher (for example 17, 21, 22):
+          - Use the existing Java installation.
+          - Do **not** run `brew install`, `brew upgrade`, `brew update`, or any Java reinstall command.
+          - Do **not** switch Java versions.
+       - If Java is missing or Java major version is below 17:
+          - Install OpenJDK 17 using Homebrew: `brew install openjdk@17`
+          - Ensure your shell uses Java 17 (update PATH/JAVA_HOME only if needed).
+    - Confirm Java 17+ is available by running: `java -version` again.
+
+3. Create pom.xml with:
+   - Java 17 compiler settings
+   - Playwright Java (latest stable)
+   - TestNG
+   - Maven Surefire Plugin configured for TestNG
+   Note: Allure reporting will be added in a later step — keep pom.xml minimal for now.
+
+4. Create src/test/resources/testng.xml with a default suite that scans com.company.tests
+
+5. Create .github/copilot-instructions.md referencing the skills folder, instructing Copilot to:
+   - Always use the Page Object pattern for selectors and interactions
+   - Always use TestNG @BeforeMethod / @AfterMethod for browser setup and teardown
+   - Refer to skills/pw-test-patterns.md, skills/testng-fixtures.md, and skills/allure-annotations.md for patterns and conventions
+   Note: Skills content is applied in Prompt 03b, so create this file with references now even if skills files are not present yet.
+
+6. Create .github/prompts/ as a reusable prompt library containing:
+   - test-generation.md
+   - page-object-generation.md
+   - test-utility-generation.md
+   Note: These prompt files are helper templates for direct Copilot CLI usage and are not part of the mandatory 00-07 workflow.
+
+7. Copy the remaining workflow prompt files from this repository's prompts folder into the new project's prompts folder:
+   - 03-apply-generated-project-templates.txt
+   - 04-playwright-cli-saucedemo.txt
+   - 05a-jira-to-playwright-test.txt
+   - 05b-file-to-playwright-test.txt
+   - 06-debugging-and-reports.txt
+   - 07-test-data-parameterization.txt
+   Rules:
+   - Use relative paths only (do not use absolute user-specific paths)
+   - Source: playwright-java-prompts/prompts/
+   - Target: playwright-java-automation/prompts/
+
+8. Confirm the project structure was created and list the generated files.
+
+9. After creation is complete, switch to the generated project and continue from there:
+   - Run: cd ../playwright-java-automation
+   - Confirm current folder is the generated project
+   - Run prompts in this order: 03, then choose 04 (CLI exploration) or 05a (Jira test generation) or 05b (file-driven test generation), then 06, 07
+
+Important: Do NOT copy templates/generated-project artifacts in this prompt. That is handled only in Prompt 03.

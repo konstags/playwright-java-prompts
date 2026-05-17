@@ -1,0 +1,99 @@
+
+You are running an interactive Playwright CLI exploration session for SauceDemo.
+
+**Goal:**
+- Guide the user through Playwright CLI by showing ONE command at a time.
+- The user must run each command in another terminal, then confirm before proceeding.
+- If a command fails, offer a fallback (if available).
+- This is an exploration session only—for learning Playwright CLI and verifying page selectors.
+
+**Instructions:**
+0. Before showing Step 1, tell the user to open a new terminal and switch to the generated project root folder `playwright-java-automation` (the folder that contains `pom.xml`). Explain that `playwright-cli` will create the `.playwright-cli` folder in the current working directory, so running commands from the project root makes screenshots and other artifacts easy to find.
+1. For each step, show only ONE command.
+2. After showing the command, ask:
+   - "Please run this command in another terminal. Did it work? (Reply: Done / Not done / Need help)"
+3. If the user replies "Done", proceed to the next command.
+4. If "Not done", offer the fallback command (if available) and repeat confirmation.
+5. If "Need help", offer a short tip or explanation for the step.
+6. After each relevant step, ask the user to confirm if the key selector worked (see below).
+7. Do NOT batch commands or execute them yourself.
+8. Do NOT generate Java code in this prompt.
+
+**Session steps:**
+Guide the user through these commands, one at a time, in this order:
+
+Before Step 1, remind the user:
+- Open a separate terminal window.
+- Run all `playwright-cli` commands from the `playwright-java-automation` project root.
+- This ensures `.playwright-cli/` is created inside the generated project, which makes screenshots easy to locate later.
+
+---
+**Step 1**
+Purpose: Open SauceDemo in headed mode
+Command:
+   playwright-cli open https://www.saucedemo.com --headed
+What to verify:
+   - Browser opens SauceDemo login page
+Prompt:
+
+   Please run this command in another terminal. Did it work? (Reply: Done / Not done / Need help)
+
+**Important:** Before running next commands, manually click on the field or button in the browser or use "playwright-cli press Tab" command to ensure the upcoming command will work.
+
+**Step 2**
+Purpose: Enter username
+Command:
+   playwright-cli type "standard_user"
+What to verify:
+   - Username field is filled
+Prompt:
+   Please run this command in another terminal. Did it work? (Reply: Done / Not done / Need help)
+
+**Step 3**
+Purpose: Move to password field
+Command:
+   playwright-cli press Tab
+What to verify:
+   - Focus moves to password field
+Prompt:
+   Please run this command in another terminal. Did it work? (Reply: Done / Not done / Need help)
+
+**Step 4**
+Purpose: Enter password
+Command:
+   playwright-cli type "secret_sauce"
+What to verify:
+   - Password field is filled
+Prompt:
+   Please run this command in another terminal. Did it work? (Reply: Done / Not done / Need help)
+
+**Step 5**
+Purpose: Submit login form
+Command:
+   playwright-cli click e15
+What to verify:
+   - Login succeeds, Products page is visible
+Prompt:
+   Please run these in your other terminal. Did login succeed and the Products page appear?
+
+---
+
+**Completion criteria:**
+When all steps are done, provide a summary:
+- Verified refs that worked, such as e15
+- Commands that succeeded
+- Any fallback commands used
+- Observed behavior checkpoints (e.g., login succeeded and Products page is visible)
+
+This concludes the Playwright CLI exploration session.
+
+Playwright CLI Exploration Session Summary:
+- Verified refs that worked, such as e15
+- Commands that succeeded
+- Any fallback commands used
+- Observed behavior checkpoints (e.g., login succeeded and Products page is visible)
+
+Next step options:
+- To execute Jira-derived scenarios with Playwright CLI, run: prompts/05a-jira-to-playwright-test.txt
+- To execute the same flow from a plain-English text file, run: prompts/05b-file-to-playwright-test.txt
+- To exit and manually create tests, no further prompts needed.

@@ -1,0 +1,9 @@
+1. Identify system dependencies on macOS required for Playwright Java project with Maven, TestNG and Allure
+
+2. For each dependency:
+   - Explain what they are and why they are needed. In case there are more options recommend which to use
+   - Verify if any are already installed
+   - Install any missing dependecy using Homebrew
+   - Confirm version requirements are satisfied and compatibilities 
+
+3. Provide a verification checklist at the end to confirm all dependencies are correctly installed.

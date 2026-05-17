@@ -1,0 +1,240 @@
+Add test reporting, failure screenshots, and debugging capabilities to the playwright-java-automation project.
+
+--- SCREENSHOT ATTACHMENT ON FAILURE ---
+
+Create src/main/java/com/company/utils/AllureHelper.java:
+- Static method attachScreenshot(Page page, String name) that:
+  - Takes a screenshot from the Playwright page
+  - Attaches it to the Allure report using @Attachment annotation
+  - Add comments explaining what @Attachment does and why screenshots help debugging
+- Static method attachTestData(String key, String value) that attaches text data to reports
+- Call attachScreenshot() in BaseTest's @AfterMethod when a test fails (use try-catch to detect failure)
+
+--- POM.XML UPDATE ---
+
+Update pom.xml to add Allure support (these were intentionally left out in the project setup step):
+
+1. Add Allure BOM in <dependencyManagement> for version alignment:
+   - io.qameta.allure:allure-bom (latest stable, e.g. 2.27.0)
+
+2. Add dependencies:
+   - io.qameta.allure:allure-testng (pulls in Allure TestNG adapter)
+   - org.aspectj:aspectjweaver (required for Allure's @Step aspect weaving)
+
+3. Update Maven Surefire Plugin to include the Allure TestNG listener and AspectJ agent:
+   - Add argLine: -javaagent:${settings.localRepository}/org/aspectj/aspectjweaver/${aspectj.version}/aspectjweaver-${aspectj.version}.jar
+   - Add listener: io.qameta.allure.testng.AllureTestNg
+
+4. Add Allure Maven Plugin for report generation:
+   - io.qameta.allure:allure-maven (latest stable)
+   - Configure reportVersion to match allure-bom version
+
+5. Add a property for aspectj.version (e.g. 1.9.22) to keep it consistent across plugin and dependency
+
+Explain each addition with a comment in pom.xml so beginners understand what each block does.
+
+--- UPDATE README WITH REPORTING SECTION ---
+
+Add the following sections to README.md:
+
+## Viewing Test Reports
+
+### Allure Reports (Recommended)
+
+Allure provides beautiful, interactive HTML reports with screenshots, test history, and metrics.
+
+#### Generate and View Report
+
+```bash
+# Run tests (they automatically generate allure-results/)
+mvn test
+
+# Generate and serve the interactive Allure report
+allure serve allure-results
+
+# The report opens automatically in your browser at http://localhost:8000
+```
+
+**What You'll See in Allure Reports:**
+- **Overview Dashboard** — Test count, pass/fail ratio, duration, flakiness
+- **Test Details** — Each test with steps, assertions, and attached screenshots
+- **Failure Screenshots** — Auto-attached when a test fails (great for debugging)
+- **Test History** — Trends over time (run 10+ times to see this)
+- **Severity Breakdown** — Tests grouped by @Severity (BLOCKER, CRITICAL, etc.)
+
+#### Interpreting Failed Tests
+
+1. Click on a failed test in the report
+2. Scroll to "Attachments" — you'll see the screenshot from the moment of failure
+3. Check the "Steps" section to see exactly what actions ran before the failure
+4. Use the screenshot to understand what the page looked like when the assertion failed
+
+### Alternative: View Test Results in Terminal
+
+```bash
+# Run tests with verbose output
+mvn test -X
+
+# Or use Maven's built-in test report (no screenshots, but quick)
+mvn surefire-report:report
+# Opens: target/site/surefire-report.html
+```
+
+### Alternative: VS Code Test Explorer
+
+1. Install the "Extension Pack for Java"
+2. Open the Test Explorer sidebar (Test icon on left)
+3. Click the ▶ icon next to a test method to run it
+4. Failed tests show a red ✗ with error details in the sidebar
+5. Click "Show Output" to see console logs
+
+**Limitation:** VS Code Test Explorer doesn't show Allure reports or screenshots — use `allure serve` for full detail on failures.
+
+---
+
+## Debugging Best Practices for Java & TestNG
+
+### 1. Use Explicit Waits Instead of Thread.sleep()
+
+❌ **Bad:**
+```java
+Thread.sleep(3000); // Hard-coded wait — slow and flaky
+page.click("button");
+```
+
+✅ **Good:**
+```java
+// Playwright waits automatically for interactive elements
+page.click("button"); // Auto-waits up to 30 seconds by default
+```
+
+### 2. Leverage TestNG Groups for Focused Debugging
+
+Mark tests with groups and run only those:
+
+```java
+@Test(groups = "smoke")
+public void testCriticalFlow() { }
+
+@Test(groups = "regression")
+public void testEdgeCase() { }
+```
+
+Run only smoke tests when debugging:
+```bash
+mvn test -Dgroups=smoke
+```
+
+### 3. Print Detailed Logs — Use System.out or a Logger
+
+Add debug output in your tests and page objects:
+
+```java
+System.out.println("Navigating to: " + url);
+System.out.println("Found " + products.size() + " products");
+System.out.println("Error message: " + errorMsg);
+```
+
+When a test fails, check the console output in the Allure report (Attachments > stdout) or terminal.
+
+### 4. Isolate Problems with Minimal Test Cases
+
+If a test fails sporadically (flaky), create a minimal reproduction:
+
+```java
+@Test(groups = "debug")
+public void debugFlakiness() {
+    // Run ONLY the failing scenario in isolation
+    // Remove setup/teardown complexity
+    // Watch in headed mode: mvn test -Dtest=YourTest -Dheaded=true
+}
+```
+
+### 5. Use Headed Mode for Visual Debugging
+
+Watch the browser in real-time to see what's happening:
+
+```bash
+# From terminal
+mvn test -Dheaded=true -Dtest=LoginTests
+
+# Or in VS Code (see "Running Tests" section)
+# Run a single test in the Test Explorer with headed mode enabled
+```
+
+### 6. Read Failure Screenshots First
+
+When a test fails:
+1. Run: `allure serve allure-results`
+2. Open the Allure report
+3. Click the failed test
+4. Scroll to "Attachments"
+5. View the screenshot — this shows EXACTLY what the page looked like when it failed
+
+The screenshot often reveals:
+- Elements weren't found (typo in selector)
+- Elements were hidden/disabled (timing issue)
+- Wrong page state (test setup incomplete)
+
+### 7. Soft Assertions for Multiple Checks
+
+If you have multiple assertions and want to see ALL failures (not just the first):
+
+```java
+// Use SoftAssert to collect failures
+SoftAssert soft = new SoftAssert();
+soft.assertEquals(title, "Expected Title");
+soft.assertEquals(count, 5);
+soft.assertTrue(isButtonVisible);
+soft.assertAll(); // Throws if ANY assertion failed, but shows all failures
+```
+
+### 8. Check Logs and Error Messages in Allure
+
+Allure automatically captures:
+- System.out.println() output
+- Test duration
+- Attached screenshots
+- Step execution order
+
+Look at the "Attachments" section in a failed test's Allure report for stdout/stderr logs.
+
+### 9. Verify Selectors Before Writing Tests
+
+Use Playwright Inspector to test selectors interactively:
+
+```bash
+# Launch Playwright Inspector (pauses before each action)
+export PWDEBUG=1
+mvn test -Dtest=LoginTests
+
+# Or in headed mode to step through visually
+mvn test -Dheaded=true -Dtest=LoginTests
+```
+
+### 10. TestNG Verbose Mode for Test Discovery Issues
+
+If tests aren't running:
+
+```bash
+mvn test -X  # Very verbose Maven output
+```
+
+Check:
+- Are test classes under `src/test/java`?
+- Do test classes end with `Test` or start with `Test`?
+- Are test methods annotated with `@Test`?
+
+---
+
+## Summary: Debugging Workflow
+
+1. **Run test:** `mvn test`
+2. **See failed test:** Check terminal or Allure report
+3. **View screenshot:** `allure serve allure-results` → click test → Attachments
+4. **Run in headed mode:** `mvn test -Dheaded=true -Dtest=FailedTest` (watch it live)
+5. **Add debug logs:** Print to console, check Allure report's stdout attachment
+6. **Isolate with groups:** Create `@Test(groups="debug")` version of failing test
+7. **Fix selector/timing:** Update page object based on what you learned
+
+This workflow catches 90% of issues in minutes instead of hours.
