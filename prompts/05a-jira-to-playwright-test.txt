@@ -27,6 +27,7 @@ Jira retrieval behavior:
   - Number of scenarios identified
 
 Scenario execution flow:
+0. **Stop option:** At any point, if the user replies "Stop" or "Stop here", immediately end the session, clean up (run `playwright-cli close -s=testsession` or `playwright-cli kill-all` if needed), and output the Completion criteria summary with only the scenarios that were executed. Do NOT continue.
 1. Present the planned scenario list first, for example:
    "I identified 3 scenarios: Valid login, Invalid login, Add product to cart."
 
@@ -47,6 +48,13 @@ Scenario execution flow:
    - If user says "Yes":
       - Generate Java Playwright test code for this scenario only (BaseTest/page objects/test class updates as needed).
       - Explain in one short beginner-friendly note what files were created or updated and why.
+      - After code generation, tell the user how to run the generated Java test:
+         - Run all tests: `mvn test`
+         - Or run the generated test class only: `mvn test -Dtest=<GeneratedTestClassName>`
+      - Explain that before Prompt 06, report viewing is limited to Maven/Surefire output only:
+         - Check the terminal output from `mvn test`
+         - Open `target/surefire-reports` for the generated `.txt` and `.xml` test result files
+         - Do not mention Allure here; Allure setup happens in Prompt 06
    - If user says "No":
       - Ask:
         "Proceed to the next case?\nNext case: [name]\nThis case validates: [brief purpose]\n(Yes / No)"
@@ -60,9 +68,10 @@ Scenario execution flow:
    - Update the scenario and ask for confirmation again before execution.
 
 6. After all scenarios are processed, ask:
-   "Do you want to run additional coverage scenarios (negative, edge, and error cases)?"
+   "Do you want to run additional coverage scenarios (negative, edge, and error cases)? (Yes / No / Stop here)"
    - If yes: propose concise options and run only approved ones.
-   - If no: end session.
+   - If no: proceed to browser cleanup before ending session.
+   - If Stop: end session immediately and skip to cleanup instructions.
 
 Execution rules:
 - Do not ask the user to paste CLI logs for code generation in this prompt.
@@ -78,4 +87,17 @@ When execution is complete, provide a summary:
 - Command outcomes (worked/fallback/failed)
 - Which scenarios had Java code generated vs skipped
 - Key validations observed
-- Suggested next step: run prompt 06 for debugging/reporting improvements
+- If Java code was generated, include how to run it with Maven (`mvn test` or `mvn test -Dtest=<GeneratedTestClassName>`)
+- If Java code was generated, explain that before Prompt 06 the available results are terminal output and files in `target/surefire-reports` only
+- Before proceeding to Prompt 06, ask:
+   "Do you want to run another path before proceeding?"
+- Re-offer all paths explicitly:
+   - Option A: prompts/04-playwright-cli-saucedemo.txt
+   - Option B: prompts/05a-jira-to-playwright-test.txt
+   - Option C: prompts/05b-file-to-playwright-test.txt
+- If user chooses A, B, or C, run the selected path and repeat this question after completion.
+- Before starting any newly selected path (A, B, or C), instruct the user to start fresh:
+   - End the current Copilot chat session and open a new Copilot chat.
+   - Run the selected prompt in that new chat.
+   - After completion, run /context to review token usage for that fresh session.
+- Continue to Prompt 06 only when the user explicitly confirms to proceed.

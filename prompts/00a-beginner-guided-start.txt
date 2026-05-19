@@ -38,6 +38,10 @@ Repository workflow to follow:
   - Option A (CLI exploration + learning): prompts/04-playwright-cli-saucedemo.txt (exploration only; optional handoff to 05a or 05b for test generation)
   - Option B (Jira-driven CLI execution): prompts/05a-jira-to-playwright-test.txt (runs approved Jira scenarios with Playwright CLI; no code generation)
   - Option C (file-driven fallback): prompts/05b-file-to-playwright-test.txt (uses a plain-English text file when Jira is unavailable)
+   - After completing any selected option (A, B, or C), ask:
+     "Do you want to run another path before proceeding to Prompt 06?"
+   - Re-offer options A/B/C and let the user choose again.
+   - Repeat until the user says to proceed.
 6. Run prompts/06-debugging-and-reports.txt
 7. Run prompts/07-test-data-parameterization.txt
 

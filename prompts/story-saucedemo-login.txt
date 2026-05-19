@@ -9,6 +9,7 @@ Acceptance Criteria:
 4. Enter the password secret_sauce.
 5. Click the login control to submit the form.
 6. Confirm the Products page appears after login.
+7. Ask the user to confirm and close the browser after the test is done.
 
 Notes:
 - This file is meant for Prompt 05b when Jira is not available.

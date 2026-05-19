@@ -2,25 +2,26 @@
 You are running an interactive Playwright CLI exploration session for SauceDemo.
 
 **Goal:**
-- Guide the user through Playwright CLI by showing ONE command at a time.
-- The user must run each command in another terminal, then confirm before proceeding.
-- If a command fails, offer a fallback (if available).
+- Guide the user through Playwright CLI by listing all required commands in execution order.
+- The user runs the full command list in another terminal and confirms once at the end.
+- If execution issues occur, offer fallback commands and quick troubleshooting.
 - This is an exploration session only—for learning Playwright CLI and verifying page selectors.
 
 **Instructions:**
 0. Before showing Step 1, tell the user to open a new terminal and switch to the generated project root folder `playwright-java-automation` (the folder that contains `pom.xml`). Explain that `playwright-cli` will create the `.playwright-cli` folder in the current working directory, so running commands from the project root makes screenshots and other artifacts easy to find.
-1. For each step, show only ONE command.
-2. After showing the command, ask:
-   - "Please run this command in another terminal. Did it work? (Reply: Done / Not done / Need help)"
-3. If the user replies "Done", proceed to the next command.
-4. If "Not done", offer the fallback command (if available) and repeat confirmation.
-5. If "Need help", offer a short tip or explanation for the step.
-6. After each relevant step, ask the user to confirm if the key selector worked (see below).
-7. Do NOT batch commands or execute them yourself.
-8. Do NOT generate Java code in this prompt.
+0a. **Note:** This prompt is a simple terminal-driven exploration flow. Do not use a named session flag here. Open the browser in headed mode so the user can watch the interaction and verify selectors.
+0b. **Stop option:** If the user replies "Stop" at any point, immediately end the session, close the browser (run `playwright-cli close` or `playwright-cli kill-all` if needed), and then output the Completion criteria summary with only the steps that were executed. Do NOT continue.
+1. Show the full command list once, in execution order, as a single checklist.
+2. Ask the user to run all commands in another terminal.
+3. After the user completes the list, ask once:
+   - "Did all commands complete successfully? (Reply: Done / Not done / Need help / Stop)"
+4. If "Done", proceed to completion summary.
+5. If "Not done" or "Need help", provide targeted fallback commands and short troubleshooting tips, then ask for confirmation again.
+6. Do NOT execute commands yourself.
+7. Do NOT generate Java code in this prompt.
 
-**Session steps:**
-Guide the user through these commands, one at a time, in this order:
+**Session command checklist:**
+Show these commands together in this exact order:
 
 Before Step 1, remind the user:
 - Open a separate terminal window.
@@ -28,53 +29,21 @@ Before Step 1, remind the user:
 - This ensures `.playwright-cli/` is created inside the generated project, which makes screenshots easy to locate later.
 
 ---
-**Step 1**
-Purpose: Open SauceDemo in headed mode
-Command:
-   playwright-cli open https://www.saucedemo.com --headed
-What to verify:
-   - Browser opens SauceDemo login page
-Prompt:
+1. `playwright-cli open www.saucedemo.com --headed`
+2. `playwright-cli type "standard_user"`
+3. `playwright-cli press Tab`
+4. `playwright-cli type "secret_sauce"`
+5. `playwright-cli snapshot`
+6. `playwright-cli click e15`
+7. `playwright-cli screenshot`
+8. `playwright-cli close`
 
-   Please run this command in another terminal. Did it work? (Reply: Done / Not done / Need help)
+Fallback commands (use only if needed):
+- If open fails: `playwright-cli open https://www.saucedemo.com --headed`
+- If close fails: `playwright-cli kill-all`
 
-**Important:** Before running next commands, manually click on the field or button in the browser or use "playwright-cli press Tab" command to ensure the upcoming command will work.
-
-**Step 2**
-Purpose: Enter username
-Command:
-   playwright-cli type "standard_user"
-What to verify:
-   - Username field is filled
-Prompt:
-   Please run this command in another terminal. Did it work? (Reply: Done / Not done / Need help)
-
-**Step 3**
-Purpose: Move to password field
-Command:
-   playwright-cli press Tab
-What to verify:
-   - Focus moves to password field
-Prompt:
-   Please run this command in another terminal. Did it work? (Reply: Done / Not done / Need help)
-
-**Step 4**
-Purpose: Enter password
-Command:
-   playwright-cli type "secret_sauce"
-What to verify:
-   - Password field is filled
-Prompt:
-   Please run this command in another terminal. Did it work? (Reply: Done / Not done / Need help)
-
-**Step 5**
-Purpose: Submit login form
-Command:
-   playwright-cli click e15
-What to verify:
-   - Login succeeds, Products page is visible
-Prompt:
-   Please run these in your other terminal. Did login succeed and the Products page appear?
+After sharing the checklist, ask once:
+- "Run all commands in order in another terminal, then reply when finished. (Reply: Done / Not done / Need help / Stop)"
 
 ---
 
@@ -84,6 +53,8 @@ When all steps are done, provide a summary:
 - Commands that succeeded
 - Any fallback commands used
 - Observed behavior checkpoints (e.g., login succeeded and Products page is visible)
+- Screenshot capture outcome (`playwright-cli screenshot`)
+- Browser shutdown outcome (`playwright-cli close` or fallback `playwright-cli kill-all`)
 
 This concludes the Playwright CLI exploration session.
 
@@ -92,8 +63,15 @@ Playwright CLI Exploration Session Summary:
 - Commands that succeeded
 - Any fallback commands used
 - Observed behavior checkpoints (e.g., login succeeded and Products page is visible)
+- Screenshot capture outcome (`playwright-cli screenshot`)
+- Browser shutdown outcome (`playwright-cli close` or fallback `playwright-cli kill-all`)
 
 Next step options:
 - To execute Jira-derived scenarios with Playwright CLI, run: prompts/05a-jira-to-playwright-test.txt
 - To execute the same flow from a plain-English text file, run: prompts/05b-file-to-playwright-test.txt
 - To exit and manually create tests, no further prompts needed.
+
+Before starting Prompt 05a or 05b, start fresh:
+- End this Copilot chat session and open a new Copilot chat.
+- Then run the selected next prompt in the new chat.
+- After your run completes, use /context to review token usage for that fresh session.

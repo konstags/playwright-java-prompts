@@ -1,5 +1,26 @@
 Add test reporting, failure screenshots, and debugging capabilities to the playwright-java-automation project.
 
+Flow rule:
+- Once Prompt 06 starts, do not ask the user to run another path from Prompt 04/05.
+- Prompt 06 should continue directly with Allure/reporting setup tasks in this prompt.
+- After completing Prompt 06, do not ask the user to run `/context`.
+
+Beginner explanation:
+- This prompt improves your project so failed tests are easier to debug.
+- You will add Allure reporting support, attach screenshots on failures, and update README with report-view steps.
+- After this prompt, you can run tests and open an interactive HTML report instead of reading only terminal output.
+
+What this prompt will do (simple checklist):
+1. Create/update helper code to attach screenshots and test data to reports.
+2. Update `pom.xml` with Allure dependencies and plugin configuration.
+3. Update README with exact commands to run tests and open reports.
+4. Provide beginner-friendly debugging practices for common failure scenarios.
+
+Before making changes, tell the user in simple words:
+- "I will now add reporting and debugging support step by step."
+- "You can continue using this same chat/session for Prompt 06."
+- "At the end, I will show you the exact command to run and how to open the report."
+
 --- SCREENSHOT ATTACHMENT ON FAILURE ---
 
 Create src/main/java/com/company/utils/AllureHelper.java:
@@ -238,3 +259,11 @@ Check:
 7. **Fix selector/timing:** Update page object based on what you learned
 
 This workflow catches 90% of issues in minutes instead of hours.
+
+--- PROMPT HANDOFF ---
+
+After completing Prompt 06, ask the user:
+"Do you want to proceed to Prompt 07 for test data parameterization? (Yes / No)"
+
+- If Yes: continue with `prompts/07-test-data-parameterization.txt`.
+- If No: end here.

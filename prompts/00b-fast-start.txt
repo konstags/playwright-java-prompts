@@ -19,6 +19,10 @@ Execution plan:
   - Default (Jira-driven): prompts/05a-jira-to-playwright-test.txt (runs approved Jira scenarios with Playwright CLI; no code generation)
   - Fallback (file-driven): prompts/05b-file-to-playwright-test.txt (uses a plain-English text file when Jira is unavailable)
    - If user asks for CLI exploration: prompts/04-playwright-cli-saucedemo.txt (exploration and selector verification only)
+   - After completing any selected option (A, B, or C), ask:
+     "Do you want to run another path before proceeding to Prompt 06?"
+   - Re-offer options A/B/C and run any additionally selected path(s).
+   - Continue to Prompt 06 only when the user confirms to proceed.
 6. Run prompts/06-debugging-and-reports.txt
 7. Run prompts/07-test-data-parameterization.txt
 

@@ -1,5 +1,5 @@
 
-# playwright-java-prompts
+# Prompts for generating Playwright Java framework
 
 **Beginner-friendly AI prompts** for setting up a Playwright Java test framework with Maven, TestNG, and Allure reporting.
 

@@ -44,6 +44,12 @@ Playwright Java testing project with TestNG and Allure reporting.
 # Run all tests
 mvn test
 
+# Run a clean, fresh test execution
+mvn clean test
+
+# Compile only (no test execution)
+mvn -DskipTests compile
+
 # Run specific test class
 mvn test -Dtest=LoginTests
 

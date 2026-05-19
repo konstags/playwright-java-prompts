@@ -1,9 +1,36 @@
-1. Identify system dependencies on macOS required for Playwright Java project with Maven, TestNG and Allure
+1. Identify system dependencies on macOS required for Playwright Java project with Maven, TestNG, and Playwright CLI
 
 2. For each dependency:
    - Explain what they are and why they are needed. In case there are more options recommend which to use
    - Verify if any are already installed
-   - Install any missing dependecy using Homebrew
+   - Install any missing dependecy using Homebrew (for system packages) or npm (for Node.js packages)
    - Confirm version requirements are satisfied and compatibilities 
+   - For Java specifically, always report the currently installed version and clearly state whether proceeding is allowed
 
-3. Provide a verification checklist at the end to confirm all dependencies are correctly installed.
+3. Required dependencies to check:
+   - Java (17+)
+   - Maven (3.6+)
+   - Node.js and npm (for Playwright CLI)
+   - Playwright CLI (@playwright/cli global package)
+   - TestNG (via Maven pom.xml; project dependency in later setup prompts)
+
+Note:
+- Do not configure Allure in this prompt.
+- Allure setup is intentionally deferred to Prompt 06 (`prompts/06-debugging-and-reports.txt`).
+
+4. For Java version reporting and recommendation:
+   - Check Java version: `java -version`
+   - Tell the user the detected major version explicitly.
+   - If Java is 17 or higher, state: "You can proceed. Java 17 is the minimum and your current version satisfies it."
+   - If Java is higher than 17, state that it is optional and not required to downgrade or switch.
+   - If Java is below 17 or missing, recommend Java 17 installation before proceeding.
+
+5. For Node.js/npm and Playwright CLI:
+   - Check if Node.js is installed: `node --version`
+   - Check if npm is installed: `npm --version`
+   - If Node.js is missing, install using: `brew install node`
+   - Check if Playwright CLI is installed: `playwright-cli --version` or `npm list -g @playwright/cli`
+   - If Playwright CLI is missing, install globally: `npm install -g @playwright/cli@latest`
+   - Verify installation: `playwright-cli --version` (should show version number)
+
+6. Provide a verification checklist at the end to confirm all dependencies are correctly installed.

@@ -37,13 +37,21 @@ Global guard: Never reinstall, upgrade, or switch versions for dependencies that
     - **First, check if Java is already installed and is version 17 or higher.**
        - Run: `java -version`
        - Parse the major version from output.
+       - Tell the user exactly which Java version is currently installed.
     - Decision policy (strict):
-       - If Java major version is 17 or higher (for example 17, 21, 22):
-          - Use the existing Java installation.
+       - If Java major version is exactly 17:
+          - Keep Java 17 as-is and continue.
+          - State: "Java 17 is installed and meets the minimum requirement."
           - Do **not** run `brew install`, `brew upgrade`, `brew update`, or any Java reinstall command.
-          - Do **not** switch Java versions.
+       - If Java major version is higher than 17 (for example 21, 22):
+          - Use the existing Java installation and continue.
+          - State: "A higher Java version is installed; this is optional, not required for this project."
+          - Do **not** recommend downgrading or switching to "latest".
+          - Do **not** run `brew install`, `brew upgrade`, `brew update`, or any Java reinstall command.
        - If Java is missing or Java major version is below 17:
-          - Install OpenJDK 17 using Homebrew: `brew install openjdk@17`
+          - Explain that Java 17 is the minimum required to proceed.
+          - Offer the user a choice to install Java 17 now.
+          - If user approves, install OpenJDK 17 using Homebrew: `brew install openjdk@17`
           - Ensure your shell uses Java 17 (update PATH/JAVA_HOME only if needed).
     - Confirm Java 17+ is available by running: `java -version` again.
 
