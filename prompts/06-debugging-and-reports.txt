@@ -23,7 +23,9 @@ Before making changes, tell the user in simple words:
 
 --- SCREENSHOT ATTACHMENT ON FAILURE ---
 
-Create src/main/java/com/company/utils/AllureHelper.java:
+Create src/test/java/com/company/utils/AllureHelper.java:
+- NOTE: AllureHelper MUST be in src/test/java (not src/main/java) because allure-testng
+  has test scope; placing it in src/main causes a compilation error ("package io.qameta.allure does not exist").
 - Static method attachScreenshot(Page page, String name) that:
   - Takes a screenshot from the Playwright page
   - Attaches it to the Allure report using @Attachment annotation

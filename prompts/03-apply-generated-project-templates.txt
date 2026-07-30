@@ -22,6 +22,7 @@ Important:
    - ../playwright-java-prompts/templates/generated-project/.github/copilot-instructions.md -> ./.github/copilot-instructions.md
    - ../playwright-java-prompts/templates/generated-project/.github/prompts/ -> ./.github/prompts/
    - ../playwright-java-prompts/templates/generated-project/skills/ -> ./skills/
+   - ../playwright-java-prompts/templates/generated-project/settings-central.xml -> ./settings-central.xml only if settings-central.xml does not already exist
    - ../playwright-java-prompts/templates/generated-project/README.md -> ./README.md only if README.md does not already exist
 
 4. Merge behavior rules:
@@ -38,6 +39,7 @@ Important:
    - skills/pw-test-patterns.md
    - skills/testng-fixtures.md
    - skills/allure-annotations.md
+   - settings-central.xml
 
 6. Output a short summary:
    - Which files were created

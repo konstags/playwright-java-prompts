@@ -8,7 +8,7 @@ Beginner explanation:
 - You read the file, extract executable scenarios, and run them interactively with Playwright CLI.
 - After a scenario passes, you can choose whether to generate Java test code for that specific scenario.
 
-**Note:** The current Playwright CLI requires explicit session management. All commands must use the `-s=testsession` flag to maintain the same browser session. The browser runs in headless mode (no visual window) for automated execution.
+**Note:** The current Playwright CLI requires explicit session management. All commands must use the `-s=testsession` flag to maintain the same browser session. The browser runs in **headed mode** (visible browser window) so you can watch the scenario execute.
 
 Goal:
 - Search the workspace for files that use the shared `story-` prefix (for example: `story-saucedemo-login.txt`).
@@ -46,7 +46,7 @@ Scenario execution flow:
 1. Present the planned scenario list first, for example:
    "I identified 1 scenario: Successful login."
 
-2a. When generating Playwright CLI commands, always include `-s=testsession` for every command. Do not use `--headed` mode; run in headless mode for automated file-driven execution.
+2a. When generating Playwright CLI commands, always include `-s=testsession` for every command. Use `--headed` mode to open a visible browser window so the user can watch the scenario execute.
 
 2. For each scenario, Copilot will automatically run all Playwright CLI commands for you, step by step, without asking you to run them manually or confirm each step.
    - Each command will be printed before execution, and the result will be summarized after.
@@ -56,11 +56,17 @@ Scenario execution flow:
    - After each scenario succeeds, before asking about Java generation, Copilot must ask the user to run `/context` first in the same chat.
    - After the user confirms `/context` is done, Copilot will ask if the user wants to generate Java Playwright test code for that scenario.
    - If you say Yes, Copilot will generate Java code for that scenario only (BaseTest/page objects/test class updates as needed) and explain what was created or updated.
+     Java file placement rules (IMPORTANT — violating these causes compilation errors):
+       - BaseTest.java → src/test/java/com/company/base/   (NOT src/main — TestNG is test-scoped)
+       - Page objects  → src/main/java/com/company/pages/
+       - Test classes  → src/test/java/com/company/tests/
+       - Utilities     → src/main/java/com/company/utils/
    - After Java code generation, Copilot must also tell the user how to run the generated Java test:
-      - Run all tests: `mvn test`
-      - Or run the generated test class only: `mvn test -Dtest=<GeneratedTestClassName>`
+      - Run all tests (headed): `mvn -s settings-central.xml test -Dheaded=true`
+      - Or run the generated test class only: `mvn -s settings-central.xml test -Dtest=<GeneratedTestClassName> -Dheaded=true`
+      - To run headless (no visible browser): omit `-Dheaded=true`
    - After Java code generation, Copilot must explain that before Prompt 06, report viewing is limited to Maven/Surefire output only:
-      - Check the terminal output from `mvn test`
+      - Check the terminal output from `mvn -s settings-central.xml test`
       - Open `target/surefire-reports/index.html`
       - Do not mention Allure here; Allure setup happens in Prompt 06
    - If you say No, Copilot will proceed to the next scenario automatically.
@@ -91,9 +97,12 @@ When execution is complete, provide a summary:
 - Which scenarios had Java code generated vs skipped
 - Key validations observed
 - Browser shutdown outcome (`playwright-cli close -s=testsession` or fallback `playwright-cli kill-all`)
-- If Java code was generated, include how to run it with Maven (`mvn test` or `mvn test -Dtest=<GeneratedTestClassName>`)
+- If Java code was generated, include how to run it with Maven:
+  - Run all tests (headed): `mvn -s settings-central.xml test -Dheaded=true`
+  - Run the generated test class only: `mvn -s settings-central.xml test -Dtest=<GeneratedTestClassName> -Dheaded=true`
+  - Run headless (no visible browser): omit `-Dheaded=true`
 - **How to view your test results:**
-   - Before Prompt 06, you can see Java test results directly in the terminal output after running `mvn test`.
+   - Before Prompt 06, you can see Java test results directly in the terminal output after running `mvn -s settings-central.xml test`.
    - Before Prompt 06, for more detailed results, open `target/surefire-reports/index.html`.
    - Do not mention Allure as a current report option here; Allure reporting and rich HTML reports become available only after Prompt 06 (debugging and reports setup).
 - After explaining how to view the results, ask:

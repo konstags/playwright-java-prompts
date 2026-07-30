@@ -5,6 +5,7 @@ Global guard: Never reinstall, upgrade, or switch versions for dependencies that
 1. Create the folder structure:
    playwright-java-automation/
    ├── pom.xml
+   ├── settings-central.xml
    ├── README.md
    ├── src/
    │   ├── test/
@@ -62,6 +63,11 @@ Global guard: Never reinstall, upgrade, or switch versions for dependencies that
    - Maven Surefire Plugin configured for TestNG
    Note: Allure reporting will be added in a later step — keep pom.xml minimal for now.
 
+3b. Create settings-central.xml at the project root to allow Maven to resolve artifacts from Maven Central directly, bypassing any corporate Artifactory mirror:
+   - Content: a minimal settings.xml with an empty <mirrors/> element
+   - This file is used with: `mvn -s settings-central.xml <goals>`
+   - Never delete or modify the global ~/.m2/settings.xml
+
 4. Create src/test/resources/testng.xml with a default suite that scans com.company.tests
 
 5. Create .github/copilot-instructions.md referencing the skills folder, instructing Copilot to:
@@ -83,6 +89,7 @@ Global guard: Never reinstall, upgrade, or switch versions for dependencies that
    - 05b-file-to-playwright-test.txt
    - 06-debugging-and-reports.txt
    - 07-test-data-parameterization.txt
+   - All files matching the pattern story-*.txt (copy all story files so Prompt 05b can find them without needing to search the source repo)
    Rules:
    - Use relative paths only (do not use absolute user-specific paths)
    - Source: playwright-java-prompts/prompts/

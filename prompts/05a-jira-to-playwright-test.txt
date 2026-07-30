@@ -49,10 +49,11 @@ Scenario execution flow:
       - Generate Java Playwright test code for this scenario only (BaseTest/page objects/test class updates as needed).
       - Explain in one short beginner-friendly note what files were created or updated and why.
       - After code generation, tell the user how to run the generated Java test:
-         - Run all tests: `mvn test`
-         - Or run the generated test class only: `mvn test -Dtest=<GeneratedTestClassName>`
+         - Run all tests (headed): `mvn -s settings-central.xml test -Dheaded=true`
+         - Run the generated test class only: `mvn -s settings-central.xml test -Dtest=<GeneratedTestClassName> -Dheaded=true`
+         - Run headless (no visible browser): omit `-Dheaded=true`
       - Explain that before Prompt 06, report viewing is limited to Maven/Surefire output only:
-         - Check the terminal output from `mvn test`
+         - Check the terminal output from `mvn -s settings-central.xml test`
          - Open `target/surefire-reports` for the generated `.txt` and `.xml` test result files
          - Do not mention Allure here; Allure setup happens in Prompt 06
    - If user says "No":
@@ -87,7 +88,10 @@ When execution is complete, provide a summary:
 - Command outcomes (worked/fallback/failed)
 - Which scenarios had Java code generated vs skipped
 - Key validations observed
-- If Java code was generated, include how to run it with Maven (`mvn test` or `mvn test -Dtest=<GeneratedTestClassName>`)
+- If Java code was generated, include how to run it with Maven:
+  - Run all tests (headed): `mvn -s settings-central.xml test -Dheaded=true`
+  - Run the generated test class only: `mvn -s settings-central.xml test -Dtest=<GeneratedTestClassName> -Dheaded=true`
+  - Run headless (no visible browser): omit `-Dheaded=true`
 - If Java code was generated, explain that before Prompt 06 the available results are terminal output and files in `target/surefire-reports` only
 - Before proceeding to Prompt 06, ask:
    "Do you want to run another path before proceeding?"
